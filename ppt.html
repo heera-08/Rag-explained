@@ -155,39 +155,51 @@
             min-height: 100px;
         }
         
-        /* Vector Visualization */
-        .vector-viz {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .vector-item {
-            background: #f39c12;
-            color: white;
-            padding: 15px;
+        /* Similarity Results */
+        .similarity-result {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
             border-radius: 8px;
-            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .similarity-bar {
+            background: #ecf0f1;
+            height: 25px;
+            border-radius: 12px;
             position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            margin-top: 8px;
+            overflow: hidden;
         }
         
-        .vector-item:hover {
-            transform: scale(1.05);
-            background: #e67e22;
+        .similarity-fill {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            height: 100%;
+            border-radius: 12px;
+            transition: width 1s ease-in-out;
+            position: relative;
         }
         
-        .vector-item.similar {
-            background: #e74c3c;
-            animation: pulse 1s infinite;
+        .similarity-bar span {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: #2c3e50;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        /* Token visualization */
+        .token {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 3px 8px;
+            margin: 2px;
+            border-radius: 12px;
+            font-size: 12px;
         }
         
         /* Flow Animation */
@@ -363,7 +375,7 @@
                 <div class="metrics">
                     <div class="metric-card">
                         <div class="metric-value">Vector DB</div>
-                        <div>FAISS, Pinecone, Weaviate</div>
+                        <div> MongoDB, FAISS, Pinecone</div>
                     </div>
                     <div class="metric-card">
                         <div class="metric-value">Embeddings</div>
@@ -413,43 +425,101 @@
         
         <!-- Slide 4: Embedding Process -->
         <div class="slide">
-            <h2>Document Embedding Visualization</h2>
+            <h2>Text to Vector Embedding Process</h2>
             
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                <h3>How Text Becomes Searchable Vectors</h3>
-                <p>Click on a document to see which ones are similar:</p>
+            <div class="demo-container">
+                <h3>See How Text Becomes Numbers</h3>
+                
+                <div class="input-group">
+                    <label>Sample Text:</label>
+                    <textarea id="embeddingText" rows="3" style="resize: none;">Users must change passwords every 90 days and use strong authentication</textarea>
+                </div>
+                
+                <button onclick="showEmbeddingProcess()">🔄 Convert to Vector</button>
+                
+                <div id="embeddingSteps" style="display: none;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                        <div>
+                            <h4>1️⃣ Text Processing</h4>
+                            <div id="tokenization" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                                <div>Tokens: <span id="tokens"></span></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4>2️⃣ Vector Representation</h4>
+                            <div id="vectorOutput" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px; font-family: monospace; font-size: 12px;">
+                                Vector will appear here...
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h4>3️⃣ Similarity Comparison</h4>
+                        <div id="similarityDemo" style="background: #e8f5e8; padding: 20px; border-radius: 8px;">
+                            <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 15px; align-items: center;">
+                                <div style="text-align: center;">
+                                    <strong>Your Text</strong><br>
+                                    <div style="background: #3498db; color: white; padding: 10px; border-radius: 5px; margin-top: 5px;">
+                                        "password authentication"
+                                    </div>
+                                </div>
+                                
+                                <div style="font-size: 24px; color: #27ae60;">⚡</div>
+                                
+                                <div>
+                                    <div id="comparisonResults">
+                                        <div class="similarity-result" data-score="0.89">
+                                            <div>📄 Security Policy</div>
+                                            <div class="similarity-bar">
+                                                <div class="similarity-fill" style="width: 89%"></div>
+                                                <span>89% similar</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="similarity-result" data-score="0.76">
+                                            <div>📄 Password Guidelines</div>
+                                            <div class="similarity-bar">
+                                                <div class="similarity-fill" style="width: 76%"></div>
+                                                <span>76% similar</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="similarity-result" data-score="0.23">
+                                            <div>📄 Vacation Policy</div>
+                                            <div class="similarity-bar">
+                                                <div class="similarity-fill" style="width: 23%"></div>
+                                                <span>23% similar</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div class="vector-viz" id="vectorViz">
-                <div class="vector-item" onclick="highlightSimilar(0)" data-category="security">
-                    <strong>Security Policy</strong><br>
-                    <small>Access control, authentication...</small>
+            <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 10px;">
+                <h4>🧠 What's Really Happening:</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                    <div>
+                        <strong>Embedding Model:</strong>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>Converts words to 384-dimensional vectors</li>
+                            <li>Similar meanings = similar vector positions</li>
+                            <li>Pre-trained on billions of text examples</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <strong>Similarity Search:</strong>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>Cosine similarity between vectors</li>
+                            <li>Score of 1.0 = identical meaning</li>
+                            <li>Score > 0.7 = highly relevant</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="vector-item" onclick="highlightSimilar(1)" data-category="backup">
-                    <strong>Backup Procedures</strong><br>
-                    <small>Daily backups, recovery...</small>
-                </div>
-                <div class="vector-item" onclick="highlightSimilar(2)" data-category="network">
-                    <strong>Network Config</strong><br>
-                    <small>VPN, firewall rules...</small>
-                </div>
-                <div class="vector-item" onclick="highlightSimilar(3)" data-category="security">
-                    <strong>Password Policy</strong><br>
-                    <small>Complexity, rotation...</small>
-                </div>
-                <div class="vector-item" onclick="highlightSimilar(4)" data-category="backup">
-                    <strong>Disaster Recovery</strong><br>
-                    <small>Backup restoration...</small>
-                </div>
-                <div class="vector-item" onclick="highlightSimilar(5)" data-category="compliance">
-                    <strong>Compliance Guidelines</strong><br>
-                    <small>Audit, reporting...</small>
-                </div>
-            </div>
-            
-            <div style="margin-top: 20px; padding: 15px; background: #e8f4fd; border-radius: 8px;">
-                <h4>💡 Key Concept:</h4>
-                <p>Similar documents cluster together in vector space. When you query "password security", both Security Policy and Password Policy documents will have high similarity scores.</p>
             </div>
         </div>
         
@@ -677,22 +747,47 @@
             }, 1000);
         }
         
-        function highlightSimilar(clickedIndex) {
-            const items = document.querySelectorAll('.vector-item');
-            const clickedItem = items[clickedIndex];
-            const clickedCategory = clickedItem.dataset.category;
+        function showEmbeddingProcess() {
+            const text = document.getElementById('embeddingText').value;
+            const steps = document.getElementById('embeddingSteps');
+            const tokens = document.getElementById('tokens');
+            const vectorOutput = document.getElementById('vectorOutput');
             
-            items.forEach(item => item.classList.remove('similar'));
+            // Show the steps
+            steps.style.display = 'block';
             
-            items.forEach(item => {
-                if (item.dataset.category === clickedCategory) {
-                    item.classList.add('similar');
-                }
-            });
+            // Step 1: Tokenization
+            const tokenArray = text.toLowerCase().split(/\s+/).filter(word => word.length > 0);
+            tokens.innerHTML = tokenArray.map(token => `<span class="token">${token}</span>`).join('');
             
+            // Step 2: Generate fake but realistic vector
             setTimeout(() => {
-                items.forEach(item => item.classList.remove('similar'));
-            }, 3000);
+                const fakeVector = [];
+                for (let i = 0; i < 20; i++) {
+                    fakeVector.push((Math.random() * 2 - 1).toFixed(3));
+                }
+                
+                vectorOutput.innerHTML = `
+                    <div>Vector (384 dimensions, showing first 20):</div>
+                    <div style="margin-top: 10px;">
+                        [${fakeVector.join(', ')}...]
+                    </div>
+                    <div style="margin-top: 10px; font-size: 11px; color: #666;">
+                        Each number represents semantic features learned from training data
+                    </div>
+                `;
+            }, 500);
+            
+            // Step 3: Animate similarity bars
+            setTimeout(() => {
+                const similarityBars = document.querySelectorAll('.similarity-fill');
+                similarityBars.forEach(bar => {
+                    bar.style.width = '0%';
+                    setTimeout(() => {
+                        bar.style.width = bar.parentElement.parentElement.dataset.score * 100 + '%';
+                    }, 100);
+                });
+            }, 1000);
         }
         
         function showQuerySteps() {
